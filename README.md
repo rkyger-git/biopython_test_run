@@ -1,2 +1,2 @@
 # biopython_test_run
-testing out bioputhon
+testing out biopython
