@@ -1,0 +1,73 @@
+---
+title: "basic graphs"
+output: html_document
+---
+
+```{r}
+library(readr)
+library(ggplot2)
+```
+
+```{r}
+# load test data
+difftest_test_data <- read_csv("difftest_test_data.csv")
+```
+
+```{r}
+# set theme
+theme_set(theme_classic())
+
+# dot plot
+ggplot(difftest_test_data, aes(x = Treatment_m, y = Measurement_m)) + 
+  geom_dotplot(binaxis='y', 
+               stackdir='center', 
+               dotsize = 1, 
+               fill="black") +
+  labs(title="Dot plot", 
+         subtitle="subtitle",
+         caption="caption",
+         x="Treatment",
+         y="Measurement")
+```
+
+```{r}
+# set theme
+theme_set(theme_classic())
+
+# box plot
+ggplot(difftest_test_data, aes(x = Treatment_m,y = Measurement_m)) + 
+  geom_boxplot(varwidth=T, fill="white") + 
+  labs(title="Box plot", 
+         subtitle="subtitle",
+         caption="caption",
+         x="Treatment",
+         y="Measurement")
+```
+
+```{r}
+# set theme
+theme_set(theme_classic())
+
+# violin plot
+ggplot(difftest_test_data, aes(x = Treatment_m,y = Measurement_m)) + 
+  geom_violin(fill="black") + 
+  labs(title="Violin plot", 
+         subtitle="subtitle",
+         caption="caption",
+         x="Treatment",
+         y="Measurement")
+```
+
+```{r}
+# set theme
+theme_set(theme_classic())
+
+# bar graph
+ggplot(difftest_test_data, aes(x = Treatment_m, y = Measurement_m)) + 
+  geom_bar(stat="identity", width=.5, fill="black") + 
+  labs(title="Bar graph", 
+         subtitle="subtitle",
+         caption="caption",
+         x="Treatment",
+         y="Measurement")
+```
