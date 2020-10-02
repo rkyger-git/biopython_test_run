@@ -1,0 +1,108 @@
+---
+title: "parametric_cor_reg"
+output: html_document
+---
+
+
+```{r}
+library(readr)
+library(correlation)
+library(ggplot2)
+```
+
+```{r}
+# load test data
+vsed <- read_csv("very_short_econ_data.csv")
+```
+
+```{r}
+# pearson correlation
+cor(vsed, method = "pearson", use = "pairwise.complete.obs")
+```
+
+```{r}
+# pearson correlation with easystats correlation package
+correlation(vsed, method="pearson", ci = 0.95)
+```
+
+```{r}
+# biweight correlation with easystats correlation package
+correlation(vsed, method="biweight", ci = 0.95)
+```
+
+```{r}
+# define variables
+inflation <- vsed$`Core Inflation Rate (%)`
+unemployment <- vsed$`U3 Unemployment (%)`
+```
+
+
+```{r}
+# check for normality
+qqnorm(inflation)
+qqline(inflation)
+
+qqnorm(unemployment)
+qqline(unemployment)
+
+```
+
+
+```{r}
+# linear regression
+model_1 <- lm(data=vsed, inflation ~ unemployment)
+```
+
+```{r}
+# model summary
+summary(model_1)
+```
+
+```{r}
+# check normality of the residuals
+qqnorm(residuals(model_1))
+qqline(residuals(model_1))
+```
+
+```{r}
+# linear regression, manually inputted intercept and slope
+theme_set(theme_bw())
+
+ggplot(vsed, aes(x=unemployment, y=inflation)) +
+  geom_jitter() +
+  geom_abline(intercept = 5.14193, slope = -0.29096, color="red") +
+  labs(title="Inflation vs Unemployment", 
+       subtitle="subtitle", 
+       caption="caption", 
+       x = "U3 Unemployment (%)",
+       y = "Core Inflation (%)")
+```
+
+```{r}
+# linear regression, coefficient intercept and slope
+theme_set(theme_bw())
+
+ggplot(vsed, aes(x=unemployment, y=inflation)) +
+  geom_jitter() +
+  geom_abline(intercept = coefficients(model_1)[1], slope = coefficients(model_1)[2], color="red") +
+  labs(title="Inflation vs Unemployment", 
+       subtitle="subtitle", 
+       caption="caption", 
+       x = "U3 Unemployment (%)",
+       y = "Core Inflation (%)")
+```
+
+```{r}
+# linear regression, used geom_smooth
+theme_set(theme_bw())
+
+ggplot(vsed, aes(x=unemployment, y=inflation)) +
+  geom_jitter() +
+  geom_smooth(method = "lm", se = FALSE, color="red", size=1) +
+  labs(title="Inflation vs Unemployment", 
+       subtitle="subtitle", 
+       caption="caption", 
+       x = "U3 Unemployment (%)",
+       y = "Core Inflation (%)")
+```
+

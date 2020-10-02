@@ -1,0 +1,124 @@
+---
+title: "semi_para_cor_reg"
+output: html_document
+---
+
+
+```{r}
+library(readr)
+library(correlation)
+library(quantreg)
+library(ggplot2)
+```
+
+```{r}
+# load test data
+vsed <- read_csv("very_short_econ_data.csv")
+```
+
+```{r}
+# spearman correlation
+cor(vsed, method = "spearman", use = "pairwise.complete.obs")
+```
+
+```{r}
+# kendall correlation
+cor(vsed, method = "kendall", use = "pairwise.complete.obs")
+```
+
+```{r}
+# spearman correlation with easystats correlation package
+correlation(vsed, method="spearman", ci = 0.95)
+```
+
+```{r}
+# kendall correlation with easystats correlation package
+correlation(vsed, method="kendall", ci = 0.95)
+```
+
+```{r}
+# define variables
+inflation <- vsed$`Core Inflation Rate (%)`
+unemployment <- vsed$`U3 Unemployment (%)`
+```
+
+```{r}
+# check for normality
+qqnorm(inflation)
+qqline(inflation)
+
+qqnorm(unemployment)
+qqline(unemployment)
+```
+
+```{r}
+# quantile regression
+qr_model_1 <- rq(inflation ~ unemployment, data = vsed)
+```
+
+```{r}
+summary(qr_model_1)
+```
+
+```{r}
+# calculate R-squared
+ss_res <- var(residuals(qr_model_1))
+ss_total <- var(fitted(qr_model_1)) + var(residuals(qr_model_1))
+1 - (ss_res / ss_total)
+```
+
+```{r}
+# estimate p-value of model using null model and ANOVA
+qr_null_model_1 = rq(inflation ~ 1, data = vsed)
+
+anova.rq(qr_model_1, qr_null_model_1)
+```
+
+```{r}
+# quantile linear regression, manually inputted intercept and slope
+theme_set(theme_bw())
+
+ggplot(vsed, aes(x=unemployment, y=inflation)) +
+  geom_jitter() +
+  geom_abline(intercept = 3.39621, slope = -0.10427, color="red") +
+  labs(title="Inflation vs Unemployment", 
+       subtitle="subtitle", 
+       caption="caption", 
+       x = "U3 Unemployment (%)",
+       y = "Core Inflation (%)")
+```
+
+```{r}
+# quantile linear regression, coefficient intercept and slope
+theme_set(theme_bw())
+
+ggplot(vsed, aes(x=unemployment, y=inflation)) +
+  geom_jitter() +
+  geom_abline(intercept = coefficients(qr_model_1)[1], slope = coefficients(qr_model_1)[2], color="red") +
+  labs(title="Inflation vs Unemployment", 
+       subtitle="subtitle", 
+       caption="caption", 
+       x = "U3 Unemployment (%)",
+       y = "Core Inflation (%)")
+```
+
+```{r}
+# quantile linear regression, used geom_quantile
+theme_set(theme_bw())
+
+ggplot(vsed, aes(x=unemployment, y=inflation)) +
+  geom_jitter() +
+  geom_quantile(quantiles = 0.5, color="red") +
+  labs(title="Inflation vs Unemployment", 
+       subtitle="subtitle", 
+       caption="caption", 
+       x = "U3 Unemployment (%)",
+       y = "Core Inflation (%)")
+```
+
+```{r}
+# optional: check normality of the residuals
+qqnorm(residuals(qr_model_1))
+qqline(residuals(qr_model_1))
+```
+
