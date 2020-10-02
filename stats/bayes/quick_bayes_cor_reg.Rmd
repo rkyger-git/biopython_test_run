@@ -1,0 +1,110 @@
+---
+title: "quick_bayes_cor_reg"
+output: html_document
+---
+
+```{r}
+library(readr)
+library(correlation)
+library(rstanarm)
+library(broom)
+library(ggplot2)
+```
+
+```{r}
+# load test data
+vsed <- read_csv("very_short_econ_data.csv")
+```
+
+```{r}
+# Method arguement does nothing for bayesian = TRUE, any string gives the same result, this is a Bayesian version of Pearson correlation, as the results are nearly the same as frequentist Pearson correlation.
+correlation(vsed, bayesian = TRUE, ci = 0.95)
+```
+
+```{r}
+# define variables
+inflation <- vsed$`Core Inflation Rate (%)`
+unemployment <- vsed$`U3 Unemployment (%)`
+```
+
+```{r}
+# check for normality
+qqnorm(control)
+qqline(control)
+
+qqnorm(experiment)
+qqline(experiment)
+```
+
+```{r}
+# create rstanarm model
+stan_model_1 <- stan_glm(inflation ~ unemployment, data = vsed)
+```
+
+```{r}
+# summarize rstanarm model, check for Rhat convergence
+summary(stan_model_1)
+```
+
+```{r}
+# get intercept and slope
+tidy(stan_model_1)
+```
+
+```{r}
+# save tibble of stan model
+tidy_stan_model <- tidy(stan_model_1)
+```
+
+```{r}
+# get 95% credible interval values
+posterior_interval(stan_model_1, prob=0.95)
+```
+
+```{r}
+# estimate R-squared
+mean(bayes_R2(stan_model_1))
+median(bayes_R2(stan_model_1))
+```
+
+```{r}
+# calculate R-squared
+ss_res <- var(residuals(stan_model_1))
+ss_total <- var(fitted(stan_model_1)) + var(residuals(stan_model_1))
+1 - (ss_res / ss_total)
+```
+
+```{r}
+# bayes linear regression, manually inputted intercept and slope
+theme_set(theme_bw())
+
+ggplot(vsed, aes(x=unemployment, y=inflation)) +
+  geom_jitter() +
+  geom_abline(intercept = 5.1541632, slope = -0.2902847, color="red") +
+  labs(title="Inflation vs Unemployment", 
+       subtitle="subtitle", 
+       caption="caption", 
+       x = "U3 Unemployment (%)",
+       y = "Core Inflation (%)")
+```
+
+```{r}
+# bayes linear regression, coefficient intercept and slope
+theme_set(theme_bw())
+
+ggplot(vsed, aes(x=unemployment, y=inflation)) +
+  geom_jitter() +
+  geom_abline(intercept = coefficients(stan_model_1)[1], slope = coefficients(stan_model_1)[2], color="red") +
+  labs(title="Inflation vs Unemployment", 
+       subtitle="subtitle", 
+       caption="caption", 
+       x = "U3 Unemployment (%)",
+       y = "Core Inflation (%)")
+```
+
+```{r}
+# check normality of the residuals
+qqnorm(residuals(stan_model_1))
+qqline(residuals(stan_model_1))
+```
+
