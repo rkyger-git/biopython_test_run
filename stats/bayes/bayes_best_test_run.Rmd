@@ -1,0 +1,50 @@
+---
+title: "Bayesian estimation supersedes the t test"
+output: html_document
+---
+
+
+```{r}
+library(BEST)
+```
+
+```{r}
+# load test data
+control <- c(1.6, 3.3, 2.5, 0.7, 2.9, 4.9, 3.3, 1.7, 2.1, 2.5, 2.1, 1.6, 2.6, 7.2, 6.6)
+experiment <- c(3.1, 2.1, 4.5, 4.8, 5.4, 9.2, 5.6, 7.1, 4.7, 4.3, 4.7, 5.7, 6.7, 10.1,5.4)
+```
+
+```{r}
+# run BEST
+best_out <- BESTmcmc(control, experiment, parallel=TRUE)
+```
+
+```{r}
+# BEST results
+best_out
+```
+
+```{r}
+# BEST summary
+summary(best_out)
+```
+
+```{r}
+# If the 95% Highest Density Interval (HDI), for the difference of means, does NOT include zero, then there is a credible difference.
+plot(best_out)
+```
+
+```{r}
+# all BEST plots
+plotAll(best_out)
+```
+
+```{r}
+# optional: check for normality
+qqnorm(control)
+qqline(control)
+
+qqnorm(experiment)
+qqline(experiment)
+```
+
