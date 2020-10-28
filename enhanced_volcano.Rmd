@@ -1,0 +1,105 @@
+---
+title: "enhanced_volcano"
+output: html_document
+---
+
+```{r}
+library(magrittr)
+library(airway)
+library(org.Hs.eg.db)
+
+library(DESeq2)
+library(EnhancedVolcano)
+```
+
+```{r}
+# get test data
+data('airway')
+airway$dex %<>% relevel('untrt')
+```
+
+```{r}
+# modify test data
+ens <- rownames(airway)
+symbols <- mapIds(org.Hs.eg.db, keys = ens,
+column = c('SYMBOL'), keytype = 'ENSEMBL')
+symbols <- symbols[!is.na(symbols)]
+symbols <- symbols[match(rownames(airway), names(symbols))]
+rownames(airway) <- symbols
+keep <- !is.na(rownames(airway))
+airway <- airway[keep,]
+```
+
+```{r}
+# run DESeq2
+dds <- DESeqDataSet(airway, design = ~ cell + dex)
+dds <- DESeq(dds, betaPrior=FALSE)
+res <- results(dds,
+contrast = c('dex','trt','untrt'))
+res <- lfcShrink(dds,
+contrast = c('dex','trt','untrt'), res=res, type = 'normal')
+```
+
+```{r}
+# basic volcano plot
+EnhancedVolcano(res,
+                lab = rownames(res), 
+                x = 'log2FoldChange', 
+                y = 'pvalue')
+```
+
+```{r}
+# volcano plot with cutoffs
+EnhancedVolcano(res,
+    lab = rownames(res),
+    x = 'log2FoldChange',
+    y = 'pvalue',
+    title = 'N061011 versus N61311',
+    pCutoff = 10e-50,
+    FCcutoff = 2.0,
+    transcriptPointSize = 3.0,
+    transcriptLabSize = 6.0)
+```
+
+```{r}
+# volcano plot with connectors
+EnhancedVolcano(res,
+    lab = rownames(res),
+    x = 'log2FoldChange',
+    y = 'pvalue',
+    title = 'N061011 versus N61311',
+    pCutoff = 10e-50,
+    FCcutoff = 2.0,
+    transcriptPointSize  = 4.0,
+    transcriptLabSize  = 6.0,
+    colAlpha = 1,
+    legendLabSize = 12,
+    legendIconSize = 4.0,
+    drawConnectors = TRUE,
+    widthConnectors = 0.75)
+```
+
+```{r}
+# volcano plot with connectors and bubble labels
+EnhancedVolcano(res,
+    lab = rownames(res),
+    x = 'log2FoldChange',
+    y = 'pvalue',
+    title = 'N061011 versus N61311',
+    selectLab = c('VCAM1','KCTD12','ADAM12',
+      'CXCL12','CACNB2','SPARCL1','DUSP1','SAMHD1','MAOA'),
+    pCutoff = 10e-50,
+    FCcutoff = 2.0,
+    transcriptPointSize = 4.0,
+    transcriptLabSize = 6.0,
+    transcriptLabCol = 'black',
+    transcriptLabFace = 'bold',
+    boxedlabels = TRUE,
+    colAlpha = 1,
+    legendLabSize = 14,
+    legendIconSize = 4.0,
+    drawConnectors = TRUE,
+    widthConnectors = 1.0,
+    colConnectors = 'black')
+```
+
