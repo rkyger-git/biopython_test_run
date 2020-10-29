@@ -1,0 +1,152 @@
+---
+title: "baySeq"
+output: html_document
+---
+
+```{r}
+library(baySeq)
+```
+
+```{r}
+# use parallel processing
+if(require("parallel")) cl <- makeCluster(8) else cl <- NULL
+```
+
+```{r}
+# create simulated data
+data(simData)
+simData[1:10,]
+```
+
+```{r}
+# label repilcates
+replicates <- c("simA", "simA", "simA", "simA", "simA", "simB", "simB", "simB", "simB", "simB")
+```
+
+```{r}
+# assign DE groups, should match replicates
+groups <- list(NDE = c(1,1,1,1,1,1,1,1,1,1), DE = c(1,1,1,1,1,2,2,2,2,2))
+```
+
+```{r}
+# combine count data and groups
+CD <- new("countData", data = simData, replicates = replicates, groups = groups)
+```
+
+```{r}
+# get library sizes
+libsizes(CD) <- getLibsizes(CD)
+```
+
+```{r}
+# create MA plot, truly differentiallt expressed genes are red
+plotMA.CD(CD, samplesA = "simA", samplesB = "simB", col = c(rep("red", 100), rep("black", 900)))
+```
+
+```{r}
+# add annoations to data
+CD@annotation <- data.frame(name = paste("count", 1:1000, sep = "_"))
+```
+
+```{r}
+# get priors, 10000 samples should be used for real data, 1000 used just as example
+CD <- getPriors.NB(CD, samplesize = 1000, estimation = "QL", cl = cl)
+```
+
+```{r}
+# get likelihoods
+CD <- getLikelihoods(CD, cl = cl, bootStraps = 3, verbose = FALSE)
+```
+
+```{r}
+# get top differentially expressed genes
+topCounts <- topCounts(CD, group = "DE")
+topCounts
+```
+
+```{r}
+# volcano plot of posteriors, truly differentiallt expressed genes are red
+plotPosteriors(CD, group = "DE", col = c(rep("red", 100), rep("black", 900)))
+```
+
+
+
+
+```{r}
+# load sample data
+data(mobData)
+data(mobAnnotation)
+```
+
+```{r}
+# sequence lengths
+seqlens <- mobAnnotation$end - mobAnnotation$start + 1
+# annotate data
+D <- new("countData", data = mobData, seglens = seglens, annotation = mobAnnotation)
+```
+
+```{r}
+# determine ibrary size
+libsizes(D) <- getLibsizes(D, estimationType = "quantile")
+```
+
+```{r}
+# subset sample data
+DPair <- D[,1:4]
+```
+
+```{r}
+# define replicate groups
+replicates(DPair) <- as.factor(c("D3/D3", "D3/D3", "WT/D3", "WT/D3"))
+```
+
+```{r}
+# model of no differential expression
+NDE <- c(1,1,1,1)
+```
+
+```{r}
+# vector of samples
+mobile <- c("non-mobile","non-mobile","mobile","mobile")
+```
+
+```{r}
+# add models to locus data
+groups(DPair) <- list(NDE = NDE, mobile = mobile)
+```
+
+```{r}
+# get priors
+DPair <- getPriors.NB(DPair, samplesize = 10000, cl = cl)
+```
+
+```{r}
+# plot null data, check if bimodal 
+plotNullPrior(DPair)
+```
+
+```{r}
+# get likelihoods, set nullData to TRUE, possibility of miscalled loci 
+DPair <- getLikelihoods(DPair, nullData = TRUE, cl = cl)
+```
+
+
+```{r}
+# get top differentially expressed genes
+topCounts(DPair, group = NULL, number = 500)
+```
+
+```{r}
+# create MA plot, truly differentiall expressed genes are red
+plotMA.CD(DPair, samplesA = c(1,2), samplesB = c(3,4), 
+          col = rgb(red = exp(cDPair@posteriors[,2]), 
+          green = 0, blue = 0))
+```
+
+
+
+```{r}
+# volcano plot of posteriors, truly differentiallt expressed genes are red
+plotPosteriors(DPair, group = 2, samplesA = 1:2, samplesB = 3:4, col = c(rep("red", 100), rep("black", 900)))
+```
+
