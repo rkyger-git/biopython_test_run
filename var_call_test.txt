@@ -1,0 +1,80 @@
+# Variant calling 
+# file: var_call_test.txt
+
+##############################################################################################################
+# download E. coli K12 reference genome
+curl -s http://hypervolu.me/%7Eerik/genomes/E.coli_K12_MG1655.fa > E.coli_K12_MG1655.fa
+
+# download fastq files for E. coli strain O104:H4 
+fastq-dump --split-files SRR341549
+
+##############################################################################################################
+# QC and trim fastq files
+fastp -i SRR341549_1.fastq.gz -I SRR341549_2.fastq.gz -o SRR341549_1.fp.fastq.gz -O SRR341549_2.fp.fastq.gz
+
+##############################################################################################################
+# index reference genome for bwa
+bwa index E.coli_K12_MG1655.fa
+
+# align sequences
+bwa mem -t 8 E.coli_K12_MG1655.fa SRR341549_1.fp.fastq.gz SRR341549_2.fp.fastq.gz > SRR341549.sam
+
+##############################################################################################################
+# convert .sam to .bam 
+samtools view -Sb SRR341549.sam > SRR341549.bam 
+
+# extract properly paired reads
+samtools view -b -f 0x2 SRR341549.bam > SRR341549.pp.bam
+
+# objective: remove duplicates
+# sort by same 
+samtools sort -n SRR341549.pp.bam -o SRR341549.nsorted.pp.bam
+# add mate score tags for markdup to use
+samtools fixmate -m SRR341549.nsorted.pp.bam SRR341549.fm.nsorted.pp.bam
+# sort by coordinates
+samtools sort SRR341549.fm.nsorted.pp.bam -o SRR341549.fm.csorted.pp.bam
+# remove duplicates 
+samtools markdup -r SRR341549.fm.csorted.pp.bam SRR341549.dedup.fm.csorted.pp.bam
+
+# extract reads with a map quality of 30 or higher
+samtools view -b -q 30 SRR341549.dedup.fm.csorted.pp.bam > SRR341549.q30.dedup.fm.csorted.pp.bam
+
+# index .bam file for variant calling
+samtools index SRR341549.q30.dedup.fm.csorted.pp.bam
+
+# optional: get stats for .bam file 
+samtools stats SRR341549.q30.dedup.fm.csorted.pp.bam > bam_stats.txt
+
+# optional: look at .bam file
+samtools view -h SRR341549.q30.dedup.fm.csorted.pp.bam | less -S
+
+##############################################################################################################
+# BCFTOOLS MPILEUP (frequentist)
+# run variant calling
+bcftools mpileup -Ou -f E.coli_K12_MG1655.fa SRR341549.q30.dedup.fm.csorted.pp.bam | bcftools call -vmO z --ploidy 1 -o SRR341549_bcf.vcf.gz
+
+# get variant calling stats
+bcftools stats SRR341549_bcf.vcf.gz > bcf_var_stats.txt
+
+# extract quality variants
+vcftools --gzvcf SRR341549_bcf.vcf.gz --minQ 200 --recode --recode-INFO-all --stdout | gzip > SRR341549_bcf_filt.vcf.gz
+
+##############################################################################################################
+# FREEBAYES (bayesian)
+# run variant calling
+freebayes -f E.coli_K12_MG1655.fa --ploidy 1 SRR341549.q30.dedup.fm.csorted.pp.bam > SRR341549_bayes.vcf.gz
+
+# get variant calling stats
+bcftools stats SRR341549_bayes.vcf.gz > bayes_var_stats.txt
+
+# extract quality variants
+vcftools --gzvcf SRR341549_bayes.vcf.gz --minQ 3000 --recode --recode-INFO-all --stdout | gzip > SRR341549_bayes_filt.vcf.gz
+
+##############################################################################################################
+# get total number of SNPs
+grep -v '^#' SRR341549_bayes.vcf.gz | wc -l
+
+# get average SNP QUAL
+grep -v '^#' SRR341549_bayes.vcf.gz | cut -f6 | awk '{ sum += $1; n++ } END { if (n > 0) print sum / n; }'
+
+##############################################################################################################
