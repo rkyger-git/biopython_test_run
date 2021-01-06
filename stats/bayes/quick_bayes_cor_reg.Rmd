@@ -7,7 +7,7 @@ output: html_document
 library(readr)
 library(correlation)
 library(rstanarm)
-library(broom)
+library(broom.mixed)
 library(ggplot2)
 ```
 
@@ -18,8 +18,45 @@ vsed <- read_csv("very_short_econ_data.csv")
 
 ```{r}
 # Method arguement does nothing for bayesian = TRUE, any string gives the same result, this is a Bayesian version of Pearson correlation, as the results are nearly the same as frequentist Pearson correlation.
-correlation(vsed, bayesian = TRUE, ci = 0.95)
+correlation(vsed, method ="pearson", bayesian = TRUE, ci = 0.95)
 ```
+
+```{r}
+correlation(vsed, method ="spearman", bayesian = TRUE, ci = 0.95)
+```
+
+```{r}
+correlation(vsed, method ="kendall", bayesian = TRUE, ci = 0.95)
+```
+
+```{r}
+library(BBcor)
+```
+
+```{r}
+bbcor_pearson <- bbcor(vsed, method = "pearson")
+ps <- posterior_samples(bbcor_pearson, summary = TRUE, cred = 0.95)
+ps
+```
+
+```{r}
+bbcor_spearman <- bbcor(vsed, method = "spearman")
+ps <- posterior_samples(bbcor_spearman, summary = TRUE, cred = 0.95)
+ps
+```
+
+```{r}
+bbcor_kendall <- bbcor(vsed, method = "kendall")
+ps <- posterior_samples(bbcor_kendall, summary = TRUE, cred = 0.95)
+ps
+```
+
+```{r}
+bbcor_blomqvist <- bbcor(vsed, method = "blomqvist")
+ps <- posterior_samples(bbcor_blomqvist, summary = TRUE, cred = 0.95)
+ps
+```
+
 
 ```{r}
 # define variables
@@ -29,11 +66,11 @@ unemployment <- vsed$`U3 Unemployment (%)`
 
 ```{r}
 # check for normality
-qqnorm(control)
-qqline(control)
+qqnorm(inflation)
+qqline(inflation)
 
-qqnorm(experiment)
-qqline(experiment)
+qqnorm(unemployment)
+qqline(unemployment)
 ```
 
 ```{r}
@@ -57,6 +94,11 @@ tidy_stan_model <- tidy(stan_model_1)
 ```
 
 ```{r}
+# alternative to get intercept and slope
+coefficients(stan_model_1)
+```
+
+```{r}
 # get 95% credible interval values
 posterior_interval(stan_model_1, prob=0.95)
 ```
@@ -68,10 +110,14 @@ median(bayes_R2(stan_model_1))
 ```
 
 ```{r}
-# calculate R-squared
-ss_res <- var(residuals(stan_model_1))
-ss_total <- var(fitted(stan_model_1)) + var(residuals(stan_model_1))
+# directly calculate R-squared
+
+model <- stan_model_1
+
+ss_res <- var(residuals(model))
+ss_total <- var(fitted(model)) + var(residuals(model))
 1 - (ss_res / ss_total)
+
 ```
 
 ```{r}
@@ -101,10 +147,3 @@ ggplot(vsed, aes(x=unemployment, y=inflation)) +
        x = "U3 Unemployment (%)",
        y = "Core Inflation (%)")
 ```
-
-```{r}
-# check normality of the residuals
-qqnorm(residuals(stan_model_1))
-qqline(residuals(stan_model_1))
-```
-
