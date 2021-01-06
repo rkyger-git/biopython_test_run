@@ -31,10 +31,6 @@ spearman
 ```
 
 ```{r}
-
-```
-
-```{r}
 bbcor_pearson <- bbcor(vsed, method = "pearson")
 ps <- posterior_samples(bbcor_pearson, summary = TRUE, cred = 0.95)
 ps
@@ -147,4 +143,3 @@ ggplot(vsed, aes(x=unemployment, y=inflation)) +
        x = "U3 Unemployment (%)",
        y = "Core Inflation (%)")
 ```
-
