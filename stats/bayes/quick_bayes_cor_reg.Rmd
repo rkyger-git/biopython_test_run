@@ -81,6 +81,11 @@ summary(stan_model_1)
 ```
 
 ```{r}
+# get model priors
+prior_summary(stan_model_1)
+```
+
+```{r}
 # get intercept and slope
 tidy(stan_model_1)
 ```
