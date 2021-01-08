@@ -1,5 +1,5 @@
 fizzbuzz <- function(n) {
-  
+  output <- c()
   if (n %% 3 == 0 && n %% 5 == 0) {
     output[n] <- "FizzBuzz"
   } else if (n %% 3 == 0) {
@@ -10,3 +10,5 @@ fizzbuzz <- function(n) {
     output[n] <- "None"
   }
 }
+
+lapply(c(1:15), fizzbuzz)
