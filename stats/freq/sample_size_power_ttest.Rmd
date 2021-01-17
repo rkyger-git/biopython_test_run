@@ -1,0 +1,18 @@
+---
+title: "sample_size_power_ttest"
+output: html_document
+---
+
+```{r}
+# power for given sample size
+power.t.test(n=3, delta=0.3, sd=0.3, sig.level = 0.05, type="two.sample")
+
+# The power of this study would be 15.72%, to detect a difference in means of 0.3 units.
+```
+
+```{r}
+# sample size for a given power
+power.t.test(power=0.95, delta=0.3, sd=0.3, sig.level = 0.05, type="two.sample")
+
+# To reach a power of 95% the study should include at least 27 subjects in each group, to detect a difference in means of 0.3 units.
+```
