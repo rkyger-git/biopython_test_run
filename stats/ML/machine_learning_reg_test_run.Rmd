@@ -1,0 +1,171 @@
+---
+title: "machine_learning_reg_test_run"
+output: html_document
+---
+
+```{r}
+library(readr)
+library(ggplot2)
+
+library(visdat)
+
+library(correlation)
+library(BBcor)
+
+library(rstanarm)
+library(broom.mixed)
+
+library(caret)
+```
+
+```{r}
+# load test data
+ednm <- read_csv("econ_data_no_miss.csv")
+```
+
+```{r}
+correlation(ednm[-1], method="pearson", ci = 0.95)
+```
+
+```{r}
+pearson <- data.frame(correlation(ednm[-1], method ="pearson", bayesian = TRUE, ci = 0.95))
+pearson
+```
+
+```{r}
+bbcor_pearson <- bbcor(ednm[-1], method = "pearson")
+ps <- posterior_samples(bbcor_pearson, summary = TRUE, cred = 0.95)
+ps
+```
+
+```{r}
+bbcor_spearman <- bbcor(ednm[-1], method = "spearman")
+ps <- posterior_samples(bbcor_spearman, summary = TRUE, cred = 0.95)
+ps
+```
+
+```{r}
+bbcor_kendall <- bbcor(ednm[-1], method = "kendall")
+ps <- posterior_samples(bbcor_kendall, summary = TRUE, cred = 0.95)
+ps
+```
+
+```{r}
+bbcor_blom <- bbcor(ednm[-1], method = "blomqvist")
+ps <- posterior_samples(bbcor_blom, summary = TRUE, cred = 0.95)
+ps
+```
+
+```{r}
+vis_dat(ednm[-1])
+```
+
+```{r}
+vis_miss(ednm[-1])
+```
+
+```{r}
+vis_cor(ednm[-1])
+```
+
+```{r}
+# define variables
+gdp <- ednm$`Nominal GDP (Trillions $)`
+debt <- ednm$`Private Sector Debt (Trillions of $)`
+pop <- ednm$`US Population (Millions)`
+
+```
+
+```{r}
+# check for normality
+qqnorm(gdp)
+qqline(gdp)
+qqnorm(debt)
+qqline(debt)
+qqnorm(pop)
+qqline(pop)
+```
+
+```{r}
+# freqeuntist ML lm, no repeats
+model <- train(
+  `Nominal GDP (Trillions $)` ~ `Private Sector Debt (Trillions of $)` + `US Population (Millions)`, 
+  ednm,
+  method = "lm",
+  trControl = trainControl(
+    method = "cv", 
+    number = 5,
+    verboseIter = TRUE
+  )
+)
+
+model
+```
+
+```{r}
+# freqeuntist ML lm
+model <- train(
+  `Nominal GDP (Trillions $)` ~ `Private Sector Debt (Trillions of $)` + `US Population (Millions)`, 
+  ednm,
+  method = "lm",
+  trControl = trainControl(
+    method = "repeatedcv", 
+    number = 5,
+    repeats = 5, 
+    verboseIter = TRUE
+  )
+)
+
+model
+```
+
+```{r}
+# bayesian ML glm, no repeats
+model <- train(
+  `Nominal GDP (Trillions $)` ~ `Private Sector Debt (Trillions of $)` + `US Population (Millions)`, 
+  ednm,
+  method = "bayesglm",
+  trControl = trainControl(
+    method = "cv",
+    number = 5,
+    verboseIter = TRUE
+  )
+)
+
+model
+```
+
+```{r}
+# bayesian ML glm
+model <- train(
+  `Nominal GDP (Trillions $)` ~ `Private Sector Debt (Trillions of $)` + `US Population (Millions)`, 
+  ednm,
+  method = "bayesglm",
+  trControl = trainControl(
+    method = "repeatedcv",
+    number = 5,
+    repeats = 5, 
+    verboseIter = TRUE
+  )
+)
+
+model
+```
+
+```{r}
+# bayesian ML neural net
+model <- train(
+  `Nominal GDP (Trillions $)` ~ `Private Sector Debt (Trillions of $)` + `US Population (Millions)`, 
+  ednm,
+  method = "brnn",
+  trControl = trainControl(
+    method = "repeatedcv",
+    number = 5,
+    repeats = 5,
+    verboseIter = TRUE
+  )
+)
+
+model
+```
+
