@@ -27,7 +27,7 @@ samtools view -Sb SRR341549.sam > SRR341549.bam
 samtools view -b -f 0x2 SRR341549.bam > SRR341549.pp.bam
 
 # objective: remove duplicates
-# sort by same 
+# sort by name 
 samtools sort -n SRR341549.pp.bam -o SRR341549.nsorted.pp.bam
 # add mate score tags for markdup to use
 samtools fixmate -m SRR341549.nsorted.pp.bam SRR341549.fm.nsorted.pp.bam
