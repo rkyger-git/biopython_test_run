@@ -87,16 +87,24 @@ qqline(pop)
 ```
 
 ```{r}
-# freqeuntist ML lm, no repeats
+# Create trainControl object: myControl
+set.seed(42)
+
+myControl <- trainControl(
+    method = "repeatedcv", 
+    number = 5,
+    repeats = 5, 
+    verboseIter = TRUE
+)
+```
+
+```{r}
+# freqeuntist ML random forest 
 model <- train(
   `Nominal GDP (Trillions $)` ~ `Private Sector Debt (Trillions of $)` + `US Population (Millions)`, 
   ednm,
-  method = "lm",
-  trControl = trainControl(
-    method = "cv", 
-    number = 5,
-    verboseIter = TRUE
-  )
+  method = "ranger",
+  trControl = myControl
 )
 
 model
@@ -108,28 +116,7 @@ model <- train(
   `Nominal GDP (Trillions $)` ~ `Private Sector Debt (Trillions of $)` + `US Population (Millions)`, 
   ednm,
   method = "lm",
-  trControl = trainControl(
-    method = "repeatedcv", 
-    number = 5,
-    repeats = 5, 
-    verboseIter = TRUE
-  )
-)
-
-model
-```
-
-```{r}
-# bayesian ML glm, no repeats
-model <- train(
-  `Nominal GDP (Trillions $)` ~ `Private Sector Debt (Trillions of $)` + `US Population (Millions)`, 
-  ednm,
-  method = "bayesglm",
-  trControl = trainControl(
-    method = "cv",
-    number = 5,
-    verboseIter = TRUE
-  )
+  trControl = myControl
 )
 
 model
@@ -141,12 +128,7 @@ model <- train(
   `Nominal GDP (Trillions $)` ~ `Private Sector Debt (Trillions of $)` + `US Population (Millions)`, 
   ednm,
   method = "bayesglm",
-  trControl = trainControl(
-    method = "repeatedcv",
-    number = 5,
-    repeats = 5, 
-    verboseIter = TRUE
-  )
+  trControl = myControl
 )
 
 model
@@ -158,14 +140,8 @@ model <- train(
   `Nominal GDP (Trillions $)` ~ `Private Sector Debt (Trillions of $)` + `US Population (Millions)`, 
   ednm,
   method = "brnn",
-  trControl = trainControl(
-    method = "repeatedcv",
-    number = 5,
-    repeats = 5,
-    verboseIter = TRUE
-  )
+  trControl = myControl
 )
 
 model
 ```
-
