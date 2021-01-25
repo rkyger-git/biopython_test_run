@@ -1,0 +1,117 @@
+---
+title: "machine_learning_class_test_run"
+output: html_document
+---
+
+```{r}
+library(readr)
+library(ggplot2)
+
+library(visdat)
+
+library(mlbench)
+library(caret)
+```
+
+```{r}
+# Load the Sonar dataset
+data(Sonar)
+```
+
+```{r}
+vis_dat(Sonar)
+```
+
+```{r}
+# Create trainControl object: myControl
+set.seed(42)
+
+myControl <- trainControl(
+  method = "repeatedcv",
+  number = 5,
+  repeats = 5,
+  summaryFunction = twoClassSummary,
+  classProbs = TRUE, # IMPORTANT!
+  verboseIter = TRUE
+)
+```
+
+```{r}
+# Train glm with custom trainControl: model
+s_model_glmnet <- train(
+  Class ~ ., 
+  Sonar, 
+  method="glmnet",
+  metric = "ROC",
+  trControl = myControl)
+
+# Print model to console
+model
+```
+
+```{r}
+
+s_model_rf <- train(
+  Class ~ ., 
+  Sonar, 
+  method="ranger",
+  metric = "ROC",
+  trControl = myControl)
+
+# Print model to console
+model
+```
+
+```{r}
+s_model_bglm <- train(
+  Class ~ ., 
+  Sonar, 
+  method="bayesglm",
+  metric = "ROC",
+  trControl = myControl)
+
+# Print model to console
+model
+```
+
+```{r}
+s_model_nb1 <- train(
+  Class ~ ., 
+  Sonar, 
+  method="nb",
+  metric = "ROC",
+  trControl = myControl)
+
+# Print model to console
+model
+```
+
+```{r}
+s_model_nb2 <- train(
+  Class ~ ., 
+  Sonar, 
+  method="naive_bayes",
+  metric = "ROC",
+  trControl = myControl)
+
+# Print model to console
+model
+```
+
+```{r}
+# Create model_list
+model_list <- list(s_model_glmnet = s_model_glmnet, s_model_rf = s_model_rf, s_model_bglm=s_model_bglm, s_model_nb1=s_model_nb1, s_model_nb2=s_model_nb2)
+
+# Pass model_list to resamples(): resamples
+resamples <- resamples(model_list)
+
+# Summarize the results
+summary(resamples)
+
+#
+bwplot(resamples, metric = "ROC")
+
+#
+dotplot(resamples, metric = "ROC")
+```
+
