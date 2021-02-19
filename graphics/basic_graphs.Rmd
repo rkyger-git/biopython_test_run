@@ -71,3 +71,18 @@ ggplot(difftest_test_data, aes(x = Treatment_m, y = Measurement_m)) +
          x="Treatment",
          y="Measurement")
 ```
+
+```{r}
+# graph ecdf's of data
+
+#load and subset data
+dtd <- fread("difftest_test_data.csv")
+dtd_sub <- dtd[, .(Treatment_m, Measurement_m)]
+
+#dtd_sub$Treatment_m <- as.factor(dtd_sub$Treatment_m)
+
+# set theme
+theme_set(theme_classic())
+
+ggplot(dtd_sub, aes(x = Measurement_m, color = Treatment_m)) + stat_ecdf()
+```
