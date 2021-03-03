@@ -1,0 +1,62 @@
+---
+title: "ggcor_&_pca_test"
+output: html_document
+---
+
+```{r}
+library(ggcorrplot)
+```
+
+```{r}
+cor_matrix_p <- round(cor(mtcars, method="pearson"), 2)
+```
+
+```{r}
+ggcorrplot(cor_matrix_p, hc.order = TRUE, type = "lower",
+   lab = TRUE)
+```
+
+```{r}
+cor_matrix_s <- round(cor(mtcars, method="spearman"), 2)
+```
+
+```{r}
+ggcorrplot(cor_matrix_s, hc.order = TRUE, type = "lower",
+   lab = TRUE)
+```
+
+```{r}
+cor_matrix_k <- round(cor(mtcars, method="kendall"), 2)
+```
+
+```{r}
+ggcorrplot(cor_matrix_k, hc.order = TRUE, type = "lower",
+   lab = TRUE)
+```
+
+```{r}
+library(FactoMineR)
+library(factoextra)
+```
+
+```{r}
+pca_mtcars <- PCA(mtcars)
+```
+
+```{r}
+fviz_screeplot(pca_mtcars)
+```
+
+```{r}
+pca_mtcars$eig
+pca_mtcars$eig > 1
+```
+
+```{r}
+fviz_contrib(pca_mtcars, choice="var", axes = 1, top = 10)
+```
+
+```{r}
+fviz_contrib(pca_mtcars, choice="var", axes = 2, top = 10)
+```
+
