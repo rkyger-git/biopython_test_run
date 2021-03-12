@@ -40,23 +40,28 @@ library(factoextra)
 ```
 
 ```{r}
+# run PCA
 pca_mtcars <- PCA(mtcars)
 ```
 
 ```{r}
+# make scree plot
 fviz_screeplot(pca_mtcars)
 ```
 
 ```{r}
+# find all PC's with an eigen value > 1
 pca_mtcars$eig
 pca_mtcars$eig > 1
 ```
 
 ```{r}
+# get percent PC contribution for each variable for PC 1 
 fviz_contrib(pca_mtcars, choice="var", axes = 1, top = 10)
 ```
 
 ```{r}
+# get percent PC contribution for each variable for PC 2
 fviz_contrib(pca_mtcars, choice="var", axes = 2, top = 10)
 ```
 
