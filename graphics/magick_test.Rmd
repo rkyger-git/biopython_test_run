@@ -1,0 +1,152 @@
+---
+title: "magick_test"
+output: html_document
+---
+
+```{r}
+library(magick)
+```
+
+```{r}
+tiger <- image_read_svg('http://jeroen.github.io/images/tiger.svg', width = 350)
+print(tiger)
+```
+
+```{r}
+# Render svg to png 
+image_write(tiger, path = "tiger.png", format = "png")
+```
+
+```{r}
+# Example image
+frink <- image_read("https://jeroen.github.io/images/frink.png")
+```
+
+```{r}
+print(frink)
+```
+
+```{r}
+# Add 20px left/right and 10px top/bottom
+image_border(image_background(frink, "hotpink"), "#000080", "20x10")
+```
+
+```{r}
+# Trim margins
+image_trim(frink)
+```
+
+```{r}
+# Passport pica
+image_crop(frink, "100x150+50")
+```
+
+```{r}
+# Resize (bigger)
+image_scale(frink, "300") # width: 300px
+```
+
+```{r}
+# Resize (smaller)
+image_scale(frink, "x300") # height: 300px
+```
+
+```{r}
+# Rotate or mirror
+image_rotate(frink, 45)
+```
+
+```{r}
+# flip image veritcally
+image_flip(frink)
+```
+
+```{r}
+# mirror image horizontally
+image_flop(frink)
+```
+
+```{r}
+# Brightness, Saturation, Hue
+image_modulate(frink, brightness = 80, saturation = 120, hue = 90)
+```
+
+```{r}
+# Paint the shirt orange
+image_fill(frink, "orange", point = "+100+200", fuzz = 20)
+```
+
+```{r}
+# Add randomness blur
+image_blur(frink, 10, 5)
+```
+
+```{r}
+# add noise
+image_noise(frink)
+```
+
+```{r}
+# Silly filters
+image_charcoal(frink)
+
+```
+
+```{r}
+image_oilpaint(frink)
+
+```
+
+```{r}
+image_negate(frink)
+```
+
+```{r}
+# Add some text
+image_annotate(frink, "I like R!", size = 70, gravity = "southwest", color = "green")
+```
+
+```{r}
+# Customize text
+image_annotate(frink, "CONFIDENTIAL", size = 30, color = "red", boxcolor = "pink",
+  degrees = 60, location = "+50+100")
+```
+
+```{r}
+# Fonts may require ImageMagick has fontconfig
+image_annotate(frink, "The quick brown fox", font = 'Times', size = 30)
+```
+
+```{r}
+frink <- image_read("https://jeroen.github.io/images/frink.png")
+frink2 <- image_scale(frink, "100")
+image_info(frink)
+image_info(frink2)
+test <- image_rotate(frink, 90)
+test <- image_background(test, "blue", flatten = TRUE)
+test <- image_border(test, "red", "10x10")
+test <- image_annotate(test, "This is how we combine transformations", color = "white", size = 30)
+print(test)
+```
+
+```{r}
+image_read("https://jeroen.github.io/images/frink.png") %>%
+  image_rotate(270) %>%
+  image_background("blue", flatten = TRUE) %>%
+  image_border("red", "10x10") %>%
+  image_annotate("The same thing with pipes", color = "white", size = 30)
+```
+
+```{r}
+# Download earth gif and make it a bit smaller for vignette
+earth <- image_read("https://jeroen.github.io/images/earth.gif") %>%
+  image_scale("200x") %>%
+  image_quantize(128)
+
+length(earth)
+```
+
+```{r}
+earth
+```
+
