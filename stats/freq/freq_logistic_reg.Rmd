@@ -1,0 +1,78 @@
+---
+title: "freq_logistic_reg"
+output: html_document
+---
+
+```{r}
+library(ISLR)
+```
+
+```{r}
+#get loan default data
+data <- Default
+data
+```
+
+```{r}
+#fit logistic regression model
+model <- glm(default~student+balance+income, family="binomial", data=data)
+
+```
+
+```{r}
+# get model summary
+summary(model)
+```
+
+```{r}
+#define two individuals
+new <- data.frame(balance = 1400, income = 2000, student = c("Yes", "No"))
+
+#predict probability of defaulting
+predicted <- predict(model, new, type="response")
+predicted
+
+#The probability of an individual with a balance of $1,400, an income of $2,000, and a student status of “Yes” has a probability of defaulting of 0.0299. Conversely, an individual with the same balance and income but with a student status of “No” has a probability of defaulting of 0.0556. 
+
+```
+
+```{r}
+library(InformationValue)
+```
+
+
+```{r}
+#convert defaults from "Yes" and "No" to 1's and 0's
+data <- ifelse(data=="Yes", 1, 0)
+
+#find optimal cutoff probability to use to maximize accuracy
+optimal <- optimalCutoff(data, predicted)[1]
+optimal
+
+```
+
+```{r}
+library(ModelMetrics)
+```
+
+```{r}
+confusionMatrix(data, predicted)
+```
+
+```{r}
+accuracy <- (2 + 0) / (2 + 0 + 0 + 0) * 100
+accuracy
+```
+
+```{r}
+sensitivity(data, predicted)
+```
+
+```{r}
+specificity(data, predicted)
+```
+
+```{r}
+recall(data, predicted)
+```
+
