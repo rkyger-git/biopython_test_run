@@ -37,7 +37,7 @@ myControl <- trainControl(
 ```
 
 ```{r}
-# Train glm with custom trainControl: model
+# Train glm
 s_model_glmnet <- train(
   Class ~ ., 
   Sonar, 
@@ -50,7 +50,7 @@ model
 ```
 
 ```{r}
-
+# Train random forest 
 s_model_rf <- train(
   Class ~ ., 
   Sonar, 
@@ -63,6 +63,7 @@ model
 ```
 
 ```{r}
+# train bayesglm
 s_model_bglm <- train(
   Class ~ ., 
   Sonar, 
@@ -75,6 +76,7 @@ model
 ```
 
 ```{r}
+# train naive bayes
 s_model_nb1 <- train(
   Class ~ ., 
   Sonar, 
@@ -87,6 +89,7 @@ model
 ```
 
 ```{r}
+# train naive bayes #2
 s_model_nb2 <- train(
   Class ~ ., 
   Sonar, 
@@ -108,10 +111,10 @@ resamples <- resamples(model_list)
 # Summarize the results
 summary(resamples)
 
-#
+# gives boxplot of ROC values for each model
 bwplot(resamples, metric = "ROC")
 
-#
+# erroneous for bayesian models, gives erroneous results
 dotplot(resamples, metric = "ROC")
 ```
 
