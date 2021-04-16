@@ -1,0 +1,19 @@
+String course = "Theatre";
+ 
+if (course.equals("Biology")) {
+ 
+  // Enroll in Biology course
+ 
+} else if (course.equals("Algebra")) {
+ 
+  // Enroll in Algebra course
+ 
+} else if (course.equals("Theatre")) {
+ 
+  // Enroll in Theatre course
+ 
+} else {
+ 
+  System.out.println("Course not found!");
+ 
+}
