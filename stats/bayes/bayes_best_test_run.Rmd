@@ -3,7 +3,6 @@ title: "Bayesian estimation supersedes the t test"
 output: html_document
 ---
 
-
 ```{r}
 library(BEST)
 ```
@@ -15,28 +14,43 @@ experiment <- c(3.1, 2.1, 4.5, 4.8, 5.4, 9.2, 5.6, 7.1, 4.7, 4.3, 4.7, 5.7, 6.7,
 ```
 
 ```{r}
-# run BEST
-best_out <- BESTmcmc(control, experiment, parallel=TRUE)
+#get means
+mean(control)
+mean(experiment)
 ```
 
 ```{r}
-# BEST results
+# run BEST
+# Note: I put the experiment data as first input, as it has the highest mean, otherwise I negative values in output, which does not make snese for this context. 
+
+best_out <- BESTmcmc(experiment, control, parallel=TRUE)
+
+```
+
+```{r}
+# MCMC fit results for BEST analysis
 best_out
 ```
 
 ```{r}
-# BEST summary
+# summary of BEST anaylsis
 summary(best_out)
 ```
 
 ```{r}
-# If the 95% Highest Density Interval (HDI), for the difference of means, does NOT include zero, then there is a credible difference.
+# Difference of means plot 
+# Note: If the 95% Highest Density Interval (HDI), for the difference of means, does NOT include zero, then there is a credible difference. However, effect size is arguably a better measure of difference.
+
 plot(best_out)
+
 ```
 
 ```{r}
-# all BEST plots
+# All BEST plots, which includes effect size.
+# Note: If the 95% Highest Density Interval (HDI), for the effect size, does NOT include zero, then there is a credible difference. 
+
 plotAll(best_out)
+
 ```
 
 ```{r}
@@ -47,4 +61,3 @@ qqline(control)
 qqnorm(experiment)
 qqline(experiment)
 ```
-
