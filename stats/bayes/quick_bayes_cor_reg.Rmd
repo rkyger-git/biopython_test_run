@@ -127,7 +127,7 @@ ss_total <- var(fitted(model)) + var(residuals(model))
 theme_set(theme_bw())
 
 ggplot(vsed, aes(x=unemployment, y=inflation)) +
-  geom_jitter() +
+  geom_point() +
   geom_abline(intercept = 5.1541632, slope = -0.2902847, color="red") +
   labs(title="Inflation vs Unemployment", 
        subtitle="subtitle", 
@@ -141,7 +141,7 @@ ggplot(vsed, aes(x=unemployment, y=inflation)) +
 theme_set(theme_bw())
 
 ggplot(vsed, aes(x=unemployment, y=inflation)) +
-  geom_jitter() +
+  geom_point() +
   geom_abline(intercept = coefficients(stan_model_1)[1], slope = coefficients(stan_model_1)[2], color="red") +
   labs(title="Inflation vs Unemployment", 
        subtitle="subtitle", 
