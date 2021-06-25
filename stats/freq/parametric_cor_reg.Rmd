@@ -69,7 +69,7 @@ qqline(residuals(model_1))
 theme_set(theme_bw())
 
 ggplot(vsed, aes(x=unemployment, y=inflation)) +
-  geom_jitter() +
+  geom_point() +
   geom_abline(intercept = 5.14193, slope = -0.29096, color="red") +
   labs(title="Inflation vs Unemployment", 
        subtitle="subtitle", 
@@ -83,7 +83,7 @@ ggplot(vsed, aes(x=unemployment, y=inflation)) +
 theme_set(theme_bw())
 
 ggplot(vsed, aes(x=unemployment, y=inflation)) +
-  geom_jitter() +
+  geom_point() +
   geom_abline(intercept = coefficients(model_1)[1], slope = coefficients(model_1)[2], color="red") +
   labs(title="Inflation vs Unemployment", 
        subtitle="subtitle", 
@@ -97,7 +97,7 @@ ggplot(vsed, aes(x=unemployment, y=inflation)) +
 theme_set(theme_bw())
 
 ggplot(vsed, aes(x=unemployment, y=inflation)) +
-  geom_jitter() +
+  geom_point() +
   geom_smooth(method = "lm", se = FALSE, color="red", size=1) +
   labs(title="Inflation vs Unemployment", 
        subtitle="subtitle", 
