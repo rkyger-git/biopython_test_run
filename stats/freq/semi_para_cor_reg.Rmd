@@ -79,7 +79,7 @@ anova.rq(qr_model_1, qr_null_model_1)
 theme_set(theme_bw())
 
 ggplot(vsed, aes(x=unemployment, y=inflation)) +
-  geom_jitter() +
+  geom_point() +
   geom_abline(intercept = 3.39621, slope = -0.10427, color="red") +
   labs(title="Inflation vs Unemployment", 
        subtitle="subtitle", 
@@ -93,7 +93,7 @@ ggplot(vsed, aes(x=unemployment, y=inflation)) +
 theme_set(theme_bw())
 
 ggplot(vsed, aes(x=unemployment, y=inflation)) +
-  geom_jitter() +
+  geom_point() +
   geom_abline(intercept = coefficients(qr_model_1)[1], slope = coefficients(qr_model_1)[2], color="red") +
   labs(title="Inflation vs Unemployment", 
        subtitle="subtitle", 
