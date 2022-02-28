@@ -1,0 +1,55 @@
+---
+title: "Raindrop.Rmd"
+output: html_document
+---
+
+```{r}
+#library(tidyverse)
+library(readr)
+library(ggplot2)
+library(gghalves)
+```
+
+```{r}
+# load test data
+difftest_test_data <- read_csv("difftest_test_data.csv")
+```
+
+```{r}
+# Vertical Raindrop Plot
+
+ggplot(difftest_test_data, aes(x = Treatment_m, y = Measurement_m, fill=Treatment_m)) + 
+  geom_point(dotsize = 1, fill="black", position = position_nudge(x = -0.14, y = 0)) +
+  geom_boxplot(width=0.12, position = position_nudge(x = 0, y = 0)) +
+  geom_half_violin(width=0.4, side = 1, position = position_nudge(x = 0.14, y = 0)) +
+  labs(title="Vertical Raindrop Plot", 
+         subtitle="subtitle",
+         caption="caption",
+         x="Treatment",
+         y="Measurement") +
+  theme_bw()
+
+#geom_jitter()
+
+```
+
+
+```{r}
+# Horizontal Raindrop Plot
+
+ggplot(difftest_test_data, aes(x = Treatment_m, y = Measurement_m, fill=Treatment_m)) + 
+  geom_point(dotsize = 1, fill="black", position = position_nudge(x = -0.14, y = 0)) +
+  geom_boxplot(width=0.12, position = position_nudge(x = 0, y = 0)) +
+  geom_half_violin(width=0.4, side = 1, position = position_nudge(x = 0.14, y = 0)) +
+  labs(title="Horizontal Raindrop Plot", 
+         subtitle="subtitle",
+         caption="caption",
+         x="Treatment",
+         y="Measurement") +
+  theme_bw() +
+  coord_flip()
+
+#geom_jitter()
+
+```
+
