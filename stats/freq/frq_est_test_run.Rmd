@@ -1,0 +1,75 @@
+---
+title: "dabestr_test"
+output: html_document
+---
+
+```{r}
+library(dabestr)
+```
+
+```{r}
+unpaired_mean_diff <- dabest(iris, Species, Petal.Width,
+                             idx = c("setosa", "versicolor", "virginica"),
+                             paired = FALSE) %>% 
+                      mean_diff()
+
+# Display the results in a user-friendly format.
+unpaired_mean_diff
+```
+
+```{r}
+# Produce a Cumming estimation plot.
+plot(unpaired_mean_diff)
+```
+
+```{r}
+unpaired_median_diff <- dabest(iris, Species, Petal.Width,
+                             idx = c("setosa", "versicolor", "virginica"),
+                             paired = FALSE) %>% 
+                      median_diff()
+
+# Display the results in a user-friendly format.
+unpaired_median_diff
+```
+
+```{r}
+# Produce a Cumming estimation plot.
+plot(unpaired_median_diff)
+```
+
+
+
+
+```{r}
+# load test data
+difftest_test_data <- read_csv("difftest_test_data.csv")
+```
+
+```{r}
+mean_diff_test <- dabest(difftest_test_data, Treatment_m, Measurement_m,
+                             idx = c("Control", "Experiment"),
+                             paired = FALSE) %>% 
+                      mean_diff()
+
+# Display the results in a user-friendly format.
+mean_diff_test
+```
+
+```{r}
+plot(mean_diff_test)
+```
+
+```{r}
+median_diff_test <- dabest(difftest_test_data, Treatment_m, Measurement_m,
+                             idx = c("Control", "Experiment"),
+                             paired = FALSE) %>% 
+                      median_diff()
+
+# Display the results in a user-friendly format.
+median_diff_test
+```
+
+```{r}
+plot(median_diff_test)
+```
+
