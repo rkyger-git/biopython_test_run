@@ -21,7 +21,7 @@ mean(experiment)
 
 ```{r}
 # run BEST
-# Note: I put the experiment data as first input, as it has the highest mean, otherwise I negative values in output, which does not make snese for this context. 
+# Note: I put the experiment data as first input, as it has the highest mean, otherwise negative values in output, which does not make sense for this context. 
 
 best_out <- BESTmcmc(experiment, control, parallel=TRUE)
 
@@ -39,15 +39,15 @@ summary(best_out)
 
 ```{r}
 # Difference of means plot 
-# Note: If the 95% Highest Density Interval (HDI), for the difference of means, does NOT include zero, then there is a credible difference. However, effect size is arguably a better measure of difference.
+# Note: If the 95% Highest Density Interval (HDI) does NOT include zero, then there is a credible difference.
 
 plot(best_out)
 
 ```
 
 ```{r}
-# All BEST plots, which includes effect size.
-# Note: If the 95% Highest Density Interval (HDI), for the effect size, does NOT include zero, then there is a credible difference. 
+# All BEST plots.
+# Note: If the 95% Highest Density Interval (HDI) does NOT include zero, then there is a credible difference.
 
 plotAll(best_out)
 
