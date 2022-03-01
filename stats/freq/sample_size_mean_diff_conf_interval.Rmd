@@ -1,0 +1,19 @@
+---
+title: "sample_size_mean_diff_conf_interval"
+output: html_document
+---
+
+```{r}
+library(presize)
+```
+
+```{r}
+# mean difference of 5, SD of 2.5, CI width with 20 participants, assuming unequal variances
+prec_meandiff(delta = 5, sd1 = 2.5, n1 = 20, var = "unequal")
+```
+
+```{r}
+# mean difference of 5, SD of 2.5, number of participants for a CI width of 3
+prec_meandiff(delta = 5, sd1 = 2.5, conf.width = 3, var = "unequal")
+```
+
