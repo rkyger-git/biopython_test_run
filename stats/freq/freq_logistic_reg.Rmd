@@ -5,6 +5,7 @@ output: html_document
 
 ```{r}
 library(ISLR)
+library(tidyverse)
 ```
 
 ```{r}
@@ -22,6 +23,12 @@ model <- glm(default~student+balance+income, family="binomial", data=data)
 ```{r}
 # get model summary
 summary(model)
+```
+
+```{r}
+#get pseudo-R2
+glance(model) %>%
+summarize(pseudoR2 = 1 - deviance/null.deviance)
 ```
 
 ```{r}
