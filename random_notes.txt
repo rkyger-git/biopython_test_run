@@ -1,0 +1,7 @@
+replace stringtie with salmon after using STAR
+
+./bin/salmon quant -t transcripts.fa -l <LIBTYPE> -a aln.bam -o salmon_quant
+
+"If your alignments for the sample you want to quantify appear in multiple .bam/.sam files, then you can simply provide the Salmon -a parameter with a (space-separated) list of these files."
+https://salmon.readthedocs.io/en/latest/salmon.html#quantifying-in-alignment-based-mode
+
